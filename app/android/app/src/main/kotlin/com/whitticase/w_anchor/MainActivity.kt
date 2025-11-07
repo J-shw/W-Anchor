@@ -1,4 +1,4 @@
-package com.example.w_anchor
+package com.whitticase.w_anchor
 
 import io.flutter.embedding.android.FlutterActivity
 
