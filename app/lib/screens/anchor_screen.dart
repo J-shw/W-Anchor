@@ -13,8 +13,13 @@ class AnchorScreen extends StatefulWidget {
 class _AnchorScreenState extends State<AnchorScreen> {
   late GoogleMapController mapController;
   final LatLng _center = const LatLng(45.521563, -122.677433);
-  
+
   double _currentAccuracy = 0.0;
+  LatLng _currentPosition = const LatLng(0.0, 0.0);
+  
+  LatLng? _anchorPosition;
+  double _distanceFromAnchor = 0.0;
+  
   StreamSubscription<Position>? _positionStreamSubscription;
 
   void _onMapCreated(GoogleMapController controller) {
@@ -33,22 +38,32 @@ class _AnchorScreenState extends State<AnchorScreen> {
     super.dispose();
   }
 
+  void _setAnchor() {
+    setState(() {
+      _anchorPosition = _currentPosition;
+      _distanceFromAnchor = 0.0;
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Anchor position set!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   Future<void> _startListeningToLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        setState(() {
-          _currentAccuracy = -1;
-        });
+        setState(() { _currentAccuracy = -1; });
         return;
       }
     }
     
     if (permission == LocationPermission.deniedForever) {
-      setState(() {
-        _currentAccuracy = -1;
-      });
+      setState(() { _currentAccuracy = -1; });
       return;
     } 
 
@@ -63,12 +78,22 @@ class _AnchorScreenState extends State<AnchorScreen> {
       if (position != null) {
         setState(() {
           _currentAccuracy = position.accuracy;
+          _currentPosition = LatLng(position.latitude, position.longitude);
+
+          if (_anchorPosition != null) {
+            _distanceFromAnchor = Geolocator.distanceBetween(
+              _anchorPosition!.latitude,
+              _anchorPosition!.longitude,
+              _currentPosition.latitude,
+              _currentPosition.longitude,
+            );
+          }
           
-          mapController.animateCamera(
-            CameraUpdate.newLatLng(
-              LatLng(position.latitude, position.longitude),
-            ),
-          );
+          if (position.accuracy < 50) {
+            mapController.animateCamera(
+              CameraUpdate.newLatLng(_currentPosition),
+            );
+          }
         });
       }
     });
@@ -78,8 +103,16 @@ class _AnchorScreenState extends State<AnchorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Anchor Screen'),
+        title: const Text('W Anchor'),
       ),
+      
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _setAnchor,
+        label: const Text('Set Anchor'),
+        icon: const Icon(Icons.anchor),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -91,27 +124,85 @@ class _AnchorScreenState extends State<AnchorScreen> {
                   onMapCreated: _onMapCreated,
                   initialCameraPosition: CameraPosition(
                     target: _center,
-                    zoom: 15.0,
+                    zoom: 11.0,
                   ),
                   myLocationEnabled: true, 
                   myLocationButtonEnabled: true,
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  compassEnabled: true,
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16), 
             
-            Text(
-              'GPS Accuracy: ${_currentAccuracy.toStringAsFixed(1)}m',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            InfoBox(
+              title: 'Distance from Anchor',
+              value: '${_distanceFromAnchor.toStringAsFixed(1)} m',
             ),
+            
+            const SizedBox(height: 10), 
+            
+            Row(
+              children: [
+                Expanded(
+                  child: InfoBox(
+                    title: 'GPS Accuracy',
+                    value: '${_currentAccuracy.toStringAsFixed(1)} m',
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: InfoBox(
+                    title: 'Current Coordinates',
+                    value: '${_currentPosition.latitude.toStringAsFixed(4)}°\n${_currentPosition.longitude.toStringAsFixed(4)}°',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 60), 
           ],
         ),
+      ),
+    );
+  }
+}
+
+// Reusable InfoBox widget (no changes)
+class InfoBox extends StatelessWidget {
+  final String title;
+  final String value;
+  
+  const InfoBox({
+    Key? key,
+    required this.title,
+    required this.value,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200, 
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black54, 
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
