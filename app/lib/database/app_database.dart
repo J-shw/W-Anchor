@@ -35,7 +35,7 @@ class AppDatabase {
   Future _createDB(Database db, int version) async {
     await db.execute(
       '''
-        CREATE TABLE periods (
+        CREATE TABLE anchorings (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           start_datetime INTEGER NOT NULL,
           end_datetime INTEGER NULL, 
