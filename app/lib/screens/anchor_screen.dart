@@ -165,7 +165,6 @@ class _AnchorScreenState extends State<AnchorScreen> {
   }
 }
 
-// Reusable InfoBox widget (no changes)
 class InfoBox extends StatelessWidget {
   final String title;
   final String value;
