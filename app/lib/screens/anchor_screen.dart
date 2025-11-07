@@ -224,37 +224,46 @@ class _AnchorScreenState extends State<AnchorScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16), 
-                  InfoBox(
-                    title: 'Distance from Anchor',
-                    value: _activeSession == null
-                        ? '---'
-                        : '${_distanceFromAnchor.toStringAsFixed(1)} m',
-                  ),
                   
                   const SizedBox(height: 10), 
                   
-                  Row(
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1.8, 
+
                     children: [
-                      Expanded(
-                        child: InfoBox(
-                          title: 'GPS Accuracy',
-                          value: '${_currentAccuracy.toStringAsFixed(1)} m',
-                        ),
+                      InfoBox(
+                        title: 'Distance from Anchor',
+                        value: _activeSession == null
+                            ? '---'
+                            : '${_distanceFromAnchor.toStringAsFixed(1)} m',
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: InfoBox(
-                          title: 'Current Coordinates',
-                          value: '${_currentPosition.latitude.toStringAsFixed(4)}°\n${_currentPosition.longitude.toStringAsFixed(4)}°',
-                        ),
+                      InfoBox(
+                        title: 'GPS Accuracy',
+                        value: '${_currentAccuracy.toStringAsFixed(1)} m',
+                      ),
+                      InfoBox(
+                        title: 'Anchor Coordinates',
+                        value: _activeSession == null
+                            ? '--°\n--°'
+                            : '${_activeSession!.latitude.toStringAsFixed(4)}°\n${_activeSession!.longitude.toStringAsFixed(4)}°',
+                      ),
+                      InfoBox(
+                        title: 'Current Coordinates',
+                        value: '${_currentPosition.latitude.toStringAsFixed(4)}°\n${_currentPosition.longitude.toStringAsFixed(4)}°',
                       ),
                     ],
                   ),
+                  
                   const SizedBox(height: 60),
                 ],
               ),
-            ),
+           ),
+            
     );
   }
 }
