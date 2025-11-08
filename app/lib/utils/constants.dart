@@ -19,3 +19,8 @@ const double defaultAlarmRadius = 30.0;
 const AppTheme defaultTheme = AppTheme.system;
 /// The default alarm message.
 const String defaultAlarmMessage = 'All clear';
+
+// Notification constants
+
+const String notificationChannelId = 'w_anchor_channel';
+const int notificationId = 888;
