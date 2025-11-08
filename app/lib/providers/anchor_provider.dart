@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:w_anchor/models/anchoring_session.dart';
 import 'package:w_anchor/database/repositories/anchor_repository.dart';
+import 'package:w_anchor/providers/settings_provider.dart';
+import 'package:w_anchor/utils/constants.dart';
 
 class AnchorProvider with ChangeNotifier {
   final AnchorRepository _repository = AnchorRepository();
@@ -11,12 +13,15 @@ class AnchorProvider with ChangeNotifier {
   AnchoringSession? _activeSession;
   GoogleMapController? _mapController;
   StreamSubscription<Position>? _positionStreamSubscription;
+  SettingsProvider? _settings;
+  DateTime? _lastGpsRefresh;
 
   double _currentAccuracy = 0.0;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   double _distanceFromAnchor = 0.0;
   bool _isLoading = true;
   List<AnchoringSession> _pastSessions = [];
+  DateTime? get lastGpsRefresh => _lastGpsRefresh;
 
   AnchoringSession? get activeSession => _activeSession;
   double get currentAccuracy => _currentAccuracy;
@@ -27,6 +32,40 @@ class AnchorProvider with ChangeNotifier {
 
   AnchorProvider() {
     _loadActiveSession();
+  }
+
+  double get alarmRadius {
+    return _settings?.alarmRadius ?? defaultAlarmRadius;
+  }
+
+  Set<Marker> get mapMarkers {
+    if (_activeSession == null) return {};
+    return {
+      Marker(
+        markerId: const MarkerId('anchor'),
+        position: LatLng(_activeSession!.latitude, _activeSession!.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      )
+    };
+  }
+
+  Set<Circle> get mapCircles {
+    if (_activeSession == null) return {};
+    return {
+      Circle(
+        circleId: const CircleId('anchor_circle'),
+        center: LatLng(_activeSession!.latitude, _activeSession!.longitude),
+        radius: alarmRadius, 
+        strokeColor: Colors.blue,
+        strokeWidth: 2,
+        fillColor: Colors.blue.withValues(alpha:0.3), 
+      )
+    };
+  }
+
+  void updateSettings(SettingsProvider settings) {
+    _settings = settings;
+    notifyListeners();
   }
 
   Future<void> _loadActiveSession() async {
@@ -59,6 +98,7 @@ class AnchorProvider with ChangeNotifier {
       locationSettings: locationSettings,
     ).listen((Position? position) {
       if (position != null) {
+        _lastGpsRefresh = DateTime.now();
         _currentAccuracy = position.accuracy;
         _currentPosition = LatLng(position.latitude, position.longitude);
 

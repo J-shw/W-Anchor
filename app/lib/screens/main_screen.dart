@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/screens/anchor_screen.dart';
 import 'package:w_anchor/screens/history_screen.dart';
+import 'package:w_anchor/screens/settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   static const List<Widget> _pages = <Widget>[
     AnchorScreen(),
     HistoryScreen(),
-    Text('Settings'),
+    SettingsScreen(),
   ];
 
   @override

@@ -1,36 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:w_anchor/models/anchoring_session.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/widgets/info_box.dart';
+import 'dart:async';
 
-class AnchorScreen extends StatelessWidget {
+class AnchorScreen extends StatefulWidget {
   const AnchorScreen({super.key});
 
-  Set<Marker> _buildMarkers(AnchoringSession? activeSession) {
-    if (activeSession == null) return {};
-    return {
-      Marker(
-        markerId: const MarkerId('anchor'),
-        position: LatLng(activeSession.latitude, activeSession.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-      )
-    };
+  @override
+  State<AnchorScreen> createState() => _AnchorScreenState();
+}
+
+class _AnchorScreenState extends State<AnchorScreen> {
+  Timer? _timer;
+  String _timeSinceUpdate = '--';
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), _updateTime);
   }
 
-  Set<Circle> _buildCircles(AnchoringSession? activeSession) {
-    if (activeSession == null) return {};
-    return {
-      Circle(
-        circleId: const CircleId('anchor_circle'),
-        center: LatLng(activeSession.latitude, activeSession.longitude),
-        radius: 5,
-        strokeColor: Colors.blue,
-        strokeWidth: 2,
-        fillColor: Colors.blue.withValues(alpha:0.3),
-      )
-    };
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _updateTime(Timer timer) {
+    final provider = context.read<AnchorProvider>();
+
+    if (provider.lastGpsRefresh == null) {
+      setState(() {
+        _timeSinceUpdate = '--';
+      });
+    } else {
+      final diffInSeconds =
+          DateTime.now().difference(provider.lastGpsRefresh!).inSeconds;
+      setState(() {
+        _timeSinceUpdate = '${diffInSeconds}s ago';
+      });
+    }
   }
 
   @override
@@ -41,11 +52,13 @@ class AnchorScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final String accuracyValue =
+        '${provider.currentAccuracy.toStringAsFixed(1)} m\n$_timeSinceUpdate';
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          const SizedBox(height: 16),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
@@ -59,8 +72,11 @@ class AnchorScreen extends StatelessWidget {
                 ),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
-                markers: _buildMarkers(provider.activeSession),
-                circles: _buildCircles(provider.activeSession),
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+                compassEnabled: true,
+                markers: provider.mapMarkers,
+                circles: provider.mapCircles,
               ),
             ),
           ),
@@ -77,10 +93,11 @@ class AnchorScreen extends StatelessWidget {
                 value: provider.activeSession == null
                     ? '---'
                     : '${provider.distanceFromAnchor.toStringAsFixed(1)} m',
+                isLarge: true,
               ),
               InfoBox(
                 title: 'GPS Accuracy',
-                value: '${provider.currentAccuracy.toStringAsFixed(1)} m',
+                value: accuracyValue,
               ),
               InfoBox(
                 title: 'Anchor Coordinates',
