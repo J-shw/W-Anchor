@@ -187,7 +187,7 @@ class AnchorProvider with ChangeNotifier {
     _alarmStatus = newStatus;
     switch (_alarmStatus) {
       case AlarmStatus.none:
-        _alarmMessage = '';
+        _alarmMessage = 'All clear';
         break;
       case AlarmStatus.outsideRadius:
         _alarmMessage = 'ALARM: Outside radius! (${_distanceFromAnchor.toStringAsFixed(0)}m)';
