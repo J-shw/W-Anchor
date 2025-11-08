@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
-import 'package:w_anchor/models/anchoring_session.dart';
+import 'package:w_anchor/widgets/history/session_card.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -77,72 +77,13 @@ class HistoryScreen extends StatelessWidget {
                       ),
                 ),
               ),
-              _SessionCard(session: session),
+              SessionCard(session: session),
             ],
           );
         } else {
-          return _SessionCard(session: session);
+          return SessionCard(session: session);
         }
       },
-    );
-  }
-}
-
-class _SessionCard extends StatelessWidget {
-  const _SessionCard({required this.session});
-  final AnchoringSession session;
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    
-    if (hours > 0) {
-      return '${hours}h ${minutes}m';
-    } else {
-      return '${minutes}m';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final startTime = DateTime.fromMillisecondsSinceEpoch(session.startDatetime);
-    final endTime = session.endDatetime != null
-        ? DateTime.fromMillisecondsSinceEpoch(session.endDatetime!)
-        : null;
-    final duration = endTime != null
-        ? endTime.difference(startTime)
-        : DateTime.now().difference(startTime);
-
-    final String startTimeDisplay = DateFormat('h:mm a').format(startTime);
-    final String endTimeDisplay = endTime != null ? DateFormat('h:mm a').format(endTime) : 'Active';
-    final String durationDisplay = _formatDuration(duration);
-
-    return Card(
-      color: Theme.of(context).colorScheme.secondaryContainer,
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: ListTile(
-        leading: Icon(Icons.anchor, color: Theme.of(context).colorScheme.primary),
-        title: Text(
-          session.name ?? 'Anchorage',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          'Time: $startTimeDisplay - $endTimeDisplay\n'
-          'Coords: ${session.latitude.toStringAsFixed(4)}°, ${session.longitude.toStringAsFixed(4)}°',
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Duration', style: TextStyle(fontSize: 12)),
-            Text(
-              durationDisplay,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ],
-        ),
-        isThreeLine: true,
-      ),
     );
   }
 }
