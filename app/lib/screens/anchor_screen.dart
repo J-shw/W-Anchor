@@ -3,9 +3,46 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/widgets/info_box.dart';
+import 'dart:async';
 
-class AnchorScreen extends StatelessWidget {
+class AnchorScreen extends StatefulWidget {
   const AnchorScreen({super.key});
+
+  @override
+  State<AnchorScreen> createState() => _AnchorScreenState();
+}
+
+class _AnchorScreenState extends State<AnchorScreen> {
+  Timer? _timer;
+  String _timeSinceUpdate = '--';
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), _updateTime);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _updateTime(Timer timer) {
+    final provider = context.read<AnchorProvider>();
+
+    if (provider.lastGpsRefresh == null) {
+      setState(() {
+        _timeSinceUpdate = '--';
+      });
+    } else {
+      final diffInSeconds =
+          DateTime.now().difference(provider.lastGpsRefresh!).inSeconds;
+      setState(() {
+        _timeSinceUpdate = '${diffInSeconds}s ago';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +51,9 @@ class AnchorScreen extends StatelessWidget {
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    final String accuracyValue =
+        '${provider.currentAccuracy.toStringAsFixed(1)} m\n$_timeSinceUpdate';
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -32,6 +72,9 @@ class AnchorScreen extends StatelessWidget {
                 ),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+                compassEnabled: true,
                 markers: provider.mapMarkers,
                 circles: provider.mapCircles,
               ),
@@ -54,7 +97,7 @@ class AnchorScreen extends StatelessWidget {
               ),
               InfoBox(
                 title: 'GPS Accuracy',
-                value: '${provider.currentAccuracy.toStringAsFixed(1)} m',
+                value: accuracyValue,
               ),
               InfoBox(
                 title: 'Anchor Coordinates',
