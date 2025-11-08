@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/widgets/info_box.dart';
+import 'package:w_anchor/utils/constants.dart';
 import 'dart:async';
 
 class AnchorScreen extends StatefulWidget {
@@ -55,10 +56,43 @@ class _AnchorScreenState extends State<AnchorScreen> {
     final String accuracyValue =
         '${provider.currentAccuracy.toStringAsFixed(1)} m\n$_timeSinceUpdate';
 
+    final Color alarmColor;
+    switch (provider.alarmStatus) {
+      case AlarmStatus.outsideRadius:
+        alarmColor = Colors.red;
+        break;
+      case AlarmStatus.noGps:
+        alarmColor = Colors.orange;
+        break;
+      case AlarmStatus.none:
+        alarmColor = Colors.transparent;
+        break;
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
+          if (provider.isAlarmActive)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12.0),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: alarmColor,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Text(
+                provider.alarmMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
