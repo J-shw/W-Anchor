@@ -134,7 +134,7 @@ class _AnchorScreenState extends State<AnchorScreen> {
                   target: LatLng(0, -0),
                   zoom: 11.0,
                 ),
-                myLocationEnabled: true,
+                myLocationEnabled: provider.alarmStatus != AlarmStatus.noGps,
                 myLocationButtonEnabled: true,
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
