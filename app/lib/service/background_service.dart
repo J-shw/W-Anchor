@@ -4,7 +4,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:w_anchor/models/anchoring_session.dart';
-import 'package:w_anchor/utils/constants.dart';
+import 'package:w_anchor/utils/constants.dart'; 
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -27,7 +27,7 @@ void onStart(ServiceInstance service) async {
   StreamSubscription<Position>? positionStream;
   Timer? gpsWatchdogTimer;
   AnchoringSession? activeSession;
-  double currentAlarmRadius = 30.0;
+  double currentAlarmRadius = defaultAlarmRadius;
   DateTime? lastGpsRefresh;
   AlarmStatus alarmStatus = AlarmStatus.none;
 
@@ -52,59 +52,72 @@ void onStart(ServiceInstance service) async {
 
   updateNotification("Monitoring your anchor position.");
 
-  positionStream = Geolocator.getPositionStream(
-    locationSettings: const LocationSettings(
-      accuracy: LocationAccuracy.bestForNavigation,
-      distanceFilter: 0,
-    ),
-  ).listen((Position? position) {
-    if (position != null) {
-      lastGpsRefresh = DateTime.now();
-      double distance = 0.0;
-      bool isOutside = false;
+  final permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied || 
+      permission == LocationPermission.deniedForever) {
+    updateNotification("Service is running, but location is denied.");
+  } else {
+    positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 0,
+      ),
+    ).listen((Position? position) {
+      positionStream = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.bestForNavigation,
+          distanceFilter: 0,
+        ),
+      ).listen((Position? position) {
+        if (position != null) {
+          lastGpsRefresh = DateTime.now();
+          double distance = 0.0;
+          bool isOutside = false;
 
-      if (activeSession != null) {
-        distance = Geolocator.distanceBetween(
-          activeSession!.latitude,
-          activeSession!.longitude,
-          position.latitude,
-          position.longitude,
-        );
-        isOutside = distance > currentAlarmRadius;
-      }
+          if (activeSession != null) {
+            distance = Geolocator.distanceBetween(
+              activeSession!.latitude,
+              activeSession!.longitude,
+              position.latitude,
+              position.longitude,
+            );
+            isOutside = distance > currentAlarmRadius;
+          }
 
-      if (activeSession != null) {
-        if (isOutside) {
-          alarmStatus = AlarmStatus.outsideRadius;
-        } else {
-          alarmStatus = AlarmStatus.none;
+          if (activeSession != null) {
+            if (isOutside) {
+              alarmStatus = AlarmStatus.outsideRadius;
+            } else {
+              alarmStatus = AlarmStatus.none;
+            }
+          } else {
+            alarmStatus = AlarmStatus.none;
+          }
+
+          service.invoke(
+            'updateUI',
+            {
+              'latitude': position.latitude,
+              'longitude': position.longitude,
+              'accuracy': position.accuracy,
+              'distance': distance,
+              'alarmStatus': alarmStatus.index,
+              'lastGpsRefresh': lastGpsRefresh!.millisecondsSinceEpoch,
+            },
+          );
+
+          String content = "All clear. Monitoring.";
+          if (alarmStatus == AlarmStatus.outsideRadius) {
+            content = "ALARM: Outside radius! (${distance.toStringAsFixed(0)}m)";
+          } else if (alarmStatus == AlarmStatus.noGps) {
+            content = "WARNING: No GPS signal...";
+          }
+
+          updateNotification(content);
         }
-      } else {
-        alarmStatus = AlarmStatus.none;
-      }
-
-      service.invoke(
-        'updateUI',
-        {
-          'latitude': position.latitude,
-          'longitude': position.longitude,
-          'accuracy': position.accuracy,
-          'distance': distance,
-          'alarmStatus': alarmStatus.index,
-          'lastGpsRefresh': lastGpsRefresh!.millisecondsSinceEpoch,
-        },
-      );
-
-      String content = "All clear. Monitoring.";
-      if (alarmStatus == AlarmStatus.outsideRadius) {
-        content = "ALARM: Outside radius! (${distance.toStringAsFixed(0)}m)";
-      } else if (alarmStatus == AlarmStatus.noGps) {
-        content = "WARNING: No GPS signal...";
-      }
-
-      updateNotification(content);
-    }
-  });
+      });
+    });
+  }
 
   gpsWatchdogTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
     if (lastGpsRefresh == null) return;
@@ -117,20 +130,25 @@ void onStart(ServiceInstance service) async {
         'updateUI',
         {'alarmStatus': alarmStatus.index},
       );
+      updateNotification("WARNING: No GPS signal...");
     }
   });
 
   service.on('setAnchor').listen((map) {
     activeSession = AnchoringSession.fromMap(map!['session']);
-    lastGpsRefresh = DateTime.now(); // Reset
+    lastGpsRefresh = DateTime.now();
     alarmStatus = AlarmStatus.none;
     service.invoke('updateUI', {'distance': 0.0, 'alarmStatus': alarmStatus.index});
+    updateNotification("Anchor set. All clear.");
   });
 
   service.on('stopAnchor').listen((map) {
     activeSession = null;
-    alarmStatus = AlarmStatus.none;
+    if (alarmStatus != AlarmStatus.noGps){
+      alarmStatus = AlarmStatus.none;
+    }
     service.invoke('updateUI', {'distance': 0.0, 'alarmStatus': alarmStatus.index});
+    updateNotification("Anchor monitoring stopped.");
   });
 
   service.on('updateSettings').listen((map) {
