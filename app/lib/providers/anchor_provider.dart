@@ -16,7 +16,7 @@ class AnchorProvider with ChangeNotifier {
   SettingsProvider? _settings;
   DateTime? _lastGpsRefresh;
   AlarmStatus _alarmStatus = AlarmStatus.none;
-  String _alarmMessage = '';
+  String _alarmMessage = defaultAlarmMessage;
   Timer? _gpsWatchdogTimer;
 
   double _currentAccuracy = 0.0;
