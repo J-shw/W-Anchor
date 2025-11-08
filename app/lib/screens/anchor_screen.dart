@@ -50,6 +50,7 @@ class AnchorScreen extends StatelessWidget {
                 value: provider.activeSession == null
                     ? '---'
                     : '${provider.distanceFromAnchor.toStringAsFixed(1)} m',
+                isLarge: true,
               ),
               InfoBox(
                 title: 'GPS Accuracy',
