@@ -15,6 +15,8 @@ Future<void> main() async {
   
   await Permission.location.request();
   await Permission.locationAlways.request();
+  await Permission.notification.request();
+
 
   await initializeService();
 
