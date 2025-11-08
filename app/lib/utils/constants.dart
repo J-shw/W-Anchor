@@ -1,6 +1,9 @@
 /// The possible themes for the application.
 enum AppTheme { system, light, dark }
 
+/// The possible alarm statuses.
+enum AlarmStatus { none, outsideRadius, noGps }
+
 // The keys for SharedPreferences.
 
 /// The radius (in meters) for the alarm.
