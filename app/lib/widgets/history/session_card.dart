@@ -33,87 +33,73 @@ class SessionCard extends StatelessWidget {
         ? endTime.difference(startTime)
         : DateTime.now().difference(startTime);
 
-    final String startTimeDisplay = DateFormat('h:mm a').format(startTime);
-    final String endTimeDisplay =
-        endTime != null ? DateFormat('h:mm a').format(endTime) : 'Active';
     final String durationDisplay = _formatDuration(duration);
+    final String startTimeDisplay = DateFormat('h:mm a').format(startTime);
 
     return Card(
       color: theme.colorScheme.secondaryContainer,
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        child: Row(
           children: [
-            Text(
-              session.name ?? 'Anchorage',
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    session.name ?? 'Anchorage',
+                    style: theme.textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
 
-            _InsightRow(
-              icon: Icons.timer_outlined,
-              label: 'Duration',
-              value: durationDisplay,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time_outlined,
+                          size: 16,
+                          color: theme.colorScheme.onSecondaryContainer.withValues(alpha:0.7)),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Started at $startTimeDisplay',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
 
-            _InsightRow(
-              icon: Icons.access_time_outlined,
-              label: 'Time',
-              value: '$startTimeDisplay - $endTimeDisplay',
-              color: theme.colorScheme.onSecondaryContainer,
+                  Row(
+                    children: [
+                      Icon(Icons.location_on_outlined,
+                          size: 16,
+                          color: theme.colorScheme.onSecondaryContainer.withValues(alpha:0.7)),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${session.latitude.toStringAsFixed(4)}°, ${session.longitude.toStringAsFixed(4)}°',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
 
-            _InsightRow(
-              icon: Icons.location_on_outlined,
-              label: 'Coords',
-              value:
-                  '${session.latitude.toStringAsFixed(4)}°, ${session.longitude.toStringAsFixed(4)}°',
-              color: theme.colorScheme.onSecondaryContainer,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const Text('Duration'),
+                Text(
+                  durationDisplay,
+                  style: theme.textTheme.titleLarge
+                      ?.copyWith(color: theme.colorScheme.primary),
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _InsightRow extends StatelessWidget {
-  const _InsightRow({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: color.withValues(alpha: 0.7)),
-        const SizedBox(width: 8),
-        Text(
-          '$label:',
-          style: TextStyle(color: color.withValues(alpha: 0.7)),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          value,
-          style: TextStyle(color: color, fontWeight: FontWeight.bold),
-        ),
-      ],
     );
   }
 }
