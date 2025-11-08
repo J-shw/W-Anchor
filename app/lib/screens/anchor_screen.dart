@@ -65,7 +65,7 @@ class _AnchorScreenState extends State<AnchorScreen> {
         alarmColor = Colors.orange;
         break;
       case AlarmStatus.none:
-        alarmColor = Colors.transparent;
+        alarmColor = Colors.green;
         break;
     }
 
@@ -73,26 +73,6 @@ class _AnchorScreenState extends State<AnchorScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          if (provider.isAlarmActive)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12.0),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: alarmColor,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Text(
-                provider.alarmMessage,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -123,6 +103,24 @@ class _AnchorScreenState extends State<AnchorScreen> {
                 value: '${provider.currentPosition.latitude.toStringAsFixed(4)}°\n${provider.currentPosition.longitude.toStringAsFixed(4)}°',
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: alarmColor,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Text(
+              provider.alarmMessage,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           Expanded(
