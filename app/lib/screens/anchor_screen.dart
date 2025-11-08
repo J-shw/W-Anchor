@@ -1,37 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:w_anchor/models/anchoring_session.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/widgets/info_box.dart';
 
 class AnchorScreen extends StatelessWidget {
   const AnchorScreen({super.key});
-
-  Set<Marker> _buildMarkers(AnchoringSession? activeSession) {
-    if (activeSession == null) return {};
-    return {
-      Marker(
-        markerId: const MarkerId('anchor'),
-        position: LatLng(activeSession.latitude, activeSession.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-      )
-    };
-  }
-
-  Set<Circle> _buildCircles(AnchoringSession? activeSession) {
-    if (activeSession == null) return {};
-    return {
-      Circle(
-        circleId: const CircleId('anchor_circle'),
-        center: LatLng(activeSession.latitude, activeSession.longitude),
-        radius: 5,
-        strokeColor: Colors.blue,
-        strokeWidth: 2,
-        fillColor: Colors.blue.withValues(alpha:0.3),
-      )
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +19,6 @@ class AnchorScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          const SizedBox(height: 16),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
@@ -59,8 +32,8 @@ class AnchorScreen extends StatelessWidget {
                 ),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
-                markers: _buildMarkers(provider.activeSession),
-                circles: _buildCircles(provider.activeSession),
+                markers: provider.mapMarkers,
+                circles: provider.mapCircles,
               ),
             ),
           ),
