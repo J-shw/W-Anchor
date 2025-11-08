@@ -14,12 +14,14 @@ class AnchorProvider with ChangeNotifier {
   GoogleMapController? _mapController;
   StreamSubscription<Position>? _positionStreamSubscription;
   SettingsProvider? _settings;
+  DateTime? _lastGpsRefresh;
 
   double _currentAccuracy = 0.0;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   double _distanceFromAnchor = 0.0;
   bool _isLoading = true;
   List<AnchoringSession> _pastSessions = [];
+  DateTime? get lastGpsRefresh => _lastGpsRefresh;
 
   AnchoringSession? get activeSession => _activeSession;
   double get currentAccuracy => _currentAccuracy;
@@ -96,6 +98,7 @@ class AnchorProvider with ChangeNotifier {
       locationSettings: locationSettings,
     ).listen((Position? position) {
       if (position != null) {
+        _lastGpsRefresh = DateTime.now();
         _currentAccuracy = position.accuracy;
         _currentPosition = LatLng(position.latitude, position.longitude);
 
