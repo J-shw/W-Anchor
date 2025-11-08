@@ -1,6 +1,9 @@
 /// The possible themes for the application.
 enum AppTheme { system, light, dark }
 
+/// The possible alarm statuses.
+enum AlarmStatus { none, outsideRadius, noGps }
+
 // The keys for SharedPreferences.
 
 /// The radius (in meters) for the alarm.
@@ -14,3 +17,5 @@ const String kTheme = 'theme';
 const double defaultAlarmRadius = 30.0;
 /// The default theme for the application.
 const AppTheme defaultTheme = AppTheme.system;
+/// The default alarm message.
+const String defaultAlarmMessage = 'All clear';

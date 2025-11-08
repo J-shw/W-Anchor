@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/widgets/info_box.dart';
+import 'package:w_anchor/utils/constants.dart';
 import 'dart:async';
 
 class AnchorScreen extends StatefulWidget {
@@ -55,6 +56,19 @@ class _AnchorScreenState extends State<AnchorScreen> {
     final String accuracyValue =
         '${provider.currentAccuracy.toStringAsFixed(1)} m\n$_timeSinceUpdate';
 
+    final Color alarmColor;
+    switch (provider.alarmStatus) {
+      case AlarmStatus.outsideRadius:
+        alarmColor = Colors.red;
+        break;
+      case AlarmStatus.noGps:
+        alarmColor = Colors.orange;
+        break;
+      case AlarmStatus.none:
+        alarmColor = Colors.green;
+        break;
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -91,6 +105,24 @@ class _AnchorScreenState extends State<AnchorScreen> {
             ],
           ),
           const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: alarmColor,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Text(
+              provider.alarmMessage,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
@@ -99,10 +131,10 @@ class _AnchorScreenState extends State<AnchorScreen> {
                   context.read<AnchorProvider>().setMapController(controller);
                 },
                 initialCameraPosition: const CameraPosition(
-                  target: LatLng(45.521563, -122.677433),
+                  target: LatLng(0, -0),
                   zoom: 11.0,
                 ),
-                myLocationEnabled: true,
+                myLocationEnabled: provider.alarmStatus != AlarmStatus.noGps,
                 myLocationButtonEnabled: true,
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
