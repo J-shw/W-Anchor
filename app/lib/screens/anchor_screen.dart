@@ -59,27 +59,6 @@ class _AnchorScreenState extends State<AnchorScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: GoogleMap(
-                onMapCreated: (controller) {
-                  context.read<AnchorProvider>().setMapController(controller);
-                },
-                initialCameraPosition: const CameraPosition(
-                  target: LatLng(45.521563, -122.677433),
-                  zoom: 11.0,
-                ),
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: false,
-                mapType: MapType.normal,
-                compassEnabled: true,
-                markers: provider.mapMarkers,
-                circles: provider.mapCircles,
-              ),
-            ),
-          ),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -110,6 +89,28 @@ class _AnchorScreenState extends State<AnchorScreen> {
                 value: '${provider.currentPosition.latitude.toStringAsFixed(4)}°\n${provider.currentPosition.longitude.toStringAsFixed(4)}°',
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: GoogleMap(
+                onMapCreated: (controller) {
+                  context.read<AnchorProvider>().setMapController(controller);
+                },
+                initialCameraPosition: const CameraPosition(
+                  target: LatLng(45.521563, -122.677433),
+                  zoom: 11.0,
+                ),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                zoomControlsEnabled: false,
+                mapType: MapType.normal,
+                compassEnabled: true,
+                markers: provider.mapMarkers,
+                circles: provider.mapCircles,
+              ),
+            ),
           ),
         ],
       ),
