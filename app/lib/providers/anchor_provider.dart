@@ -209,8 +209,10 @@ class AnchorProvider with ChangeNotifier {
 
     _activeSession = null;
     _distanceFromAnchor = 0.0;
-    _updateAlarmStatus(AlarmStatus.none);
-    _alarmMessage = '';
+    if (_alarmStatus == AlarmStatus.outsideRadius){
+      _updateAlarmStatus(AlarmStatus.none);
+      _alarmMessage = defaultAlarmMessage;
+    }
 
     notifyListeners();
   }
