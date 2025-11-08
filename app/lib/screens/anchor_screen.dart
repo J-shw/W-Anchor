@@ -131,7 +131,7 @@ class _AnchorScreenState extends State<AnchorScreen> {
                   context.read<AnchorProvider>().setMapController(controller);
                 },
                 initialCameraPosition: const CameraPosition(
-                  target: LatLng(45.521563, -122.677433),
+                  target: LatLng(0, -0),
                   zoom: 11.0,
                 ),
                 myLocationEnabled: true,
