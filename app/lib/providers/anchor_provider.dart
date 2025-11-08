@@ -15,6 +15,9 @@ class AnchorProvider with ChangeNotifier {
   StreamSubscription<Position>? _positionStreamSubscription;
   SettingsProvider? _settings;
   DateTime? _lastGpsRefresh;
+  AlarmStatus _alarmStatus = AlarmStatus.none;
+  String _alarmMessage = '';
+  Timer? _gpsWatchdogTimer;
 
   double _currentAccuracy = 0.0;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
@@ -22,6 +25,9 @@ class AnchorProvider with ChangeNotifier {
   bool _isLoading = true;
   List<AnchoringSession> _pastSessions = [];
   DateTime? get lastGpsRefresh => _lastGpsRefresh;
+  bool get isAlarmActive => _alarmStatus != AlarmStatus.none;
+  String get alarmMessage => _alarmMessage;
+  AlarmStatus get alarmStatus => _alarmStatus;
 
   AnchoringSession? get activeSession => _activeSession;
   double get currentAccuracy => _currentAccuracy;
@@ -81,6 +87,8 @@ class AnchorProvider with ChangeNotifier {
   Future<void> startGpsStream() async {
     if (_positionStreamSubscription != null) return;
 
+    _startGpsWatchdog();
+
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -111,6 +119,14 @@ class AnchorProvider with ChangeNotifier {
           );
         }
 
+        final bool isOutside = _distanceFromAnchor > alarmRadius;
+
+        if (isOutside) {
+          _updateAlarmStatus(AlarmStatus.outsideRadius);
+        } else {
+          _updateAlarmStatus(AlarmStatus.none);
+        }
+
         if (position.accuracy < 50 && _mapController != null) {
           _mapController!.animateCamera(
             CameraUpdate.newLatLng(_currentPosition),
@@ -125,6 +141,8 @@ class AnchorProvider with ChangeNotifier {
   void stopGpsStream() {
     _positionStreamSubscription?.cancel();
     _positionStreamSubscription = null;
+    _gpsWatchdogTimer?.cancel();
+    _updateAlarmStatus(AlarmStatus.none);
   }
 
   Future<void> startAnchoring() async {
@@ -148,6 +166,39 @@ class AnchorProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void _startGpsWatchdog() {
+    _gpsWatchdogTimer?.cancel();
+    _gpsWatchdogTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_positionStreamSubscription != null && _lastGpsRefresh != null) {
+        final int secondsSinceUpdate = DateTime.now().difference(_lastGpsRefresh!).inSeconds;
+
+        if (secondsSinceUpdate > 15 && _alarmStatus != AlarmStatus.outsideRadius) {
+          _updateAlarmStatus(AlarmStatus.noGps);
+        }
+      } else if (_positionStreamSubscription != null && _lastGpsRefresh == null) {
+        _updateAlarmStatus(AlarmStatus.noGps);
+      }
+    });
+  }
+  
+  void _updateAlarmStatus(AlarmStatus newStatus) {
+    if (newStatus == _alarmStatus) return;
+
+    _alarmStatus = newStatus;
+    switch (_alarmStatus) {
+      case AlarmStatus.none:
+        _alarmMessage = '';
+        break;
+      case AlarmStatus.outsideRadius:
+        _alarmMessage = 'ALARM: Outside radius! (${_distanceFromAnchor.toStringAsFixed(0)}m)';
+        break;
+      case AlarmStatus.noGps:
+        _alarmMessage = 'WARNING: No GPS signal...';
+        break;
+    }
+    notifyListeners();
+  }
+
   Future<void> stopAnchoring() async {
     if (_activeSession == null) return;
 
@@ -158,11 +209,20 @@ class AnchorProvider with ChangeNotifier {
 
     _activeSession = null;
     _distanceFromAnchor = 0.0;
+    _updateAlarmStatus(AlarmStatus.none);
+    _alarmMessage = '';
+
     notifyListeners();
   }
 
   Future<void> loadHistory() async {
     _pastSessions = await _repository.getAllAnchorings();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _gpsWatchdogTimer?.cancel();
+    super.dispose();
   }
 }
