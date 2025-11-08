@@ -25,7 +25,7 @@ class MainNavigationBar extends StatelessWidget {
         ),
         NavigationDestination(
           selectedIcon: Icon(Icons.timeline_rounded),
-          icon: Icon(Icons.timelapse_sharp),
+          icon: Icon(Icons.timeline_sharp),
           label: "History",
         ),
         NavigationDestination(
