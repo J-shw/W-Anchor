@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/screens/main_screen.dart';
 import 'package:w_anchor/providers/settings_provider.dart';
 import 'package:w_anchor/utils/constants.dart';
+import 'package:w_anchor/service/background_service.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() {
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Permission.location.request();
+  await Permission.locationAlways.request();
+
+  await initializeService();
+
   runApp(
     MultiProvider(
       providers: [
@@ -21,6 +33,32 @@ void main() {
       ],
       child: const MyApp(),
     ),
+  );
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  // --- Notification Setup ---
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // --- Configure for Android ---
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      autoStart: true,
+      isForegroundMode: true,
+      notificationChannelId: notificationChannelId,
+      initialNotificationTitle: 'W Anchor',
+      initialNotificationContent: 'Initialising...',
+      foregroundServiceNotificationId: notificationId,
+    ),
+    iosConfiguration: IosConfiguration(), 
   );
 }
 
