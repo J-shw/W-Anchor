@@ -90,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: appBars[_selectedIndex],
       body: _pages[_selectedIndex],
       floatingActionButton: _buildFab(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: MainNavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
