@@ -217,9 +217,16 @@ class AnchorProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Loads the history page
   Future<void> loadHistory() async {
     _pastSessions = await _repository.getAllAnchorings();
     notifyListeners();
+  }
+
+  /// Deletes a session and refreshes the history list
+  Future<void> deleteAnchoring(int id) async {
+    await _repository.deleteAnchoring(id);
+    await loadHistory(); 
   }
 
   @override
