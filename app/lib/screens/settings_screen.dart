@@ -52,6 +52,7 @@ class SettingsScreen extends StatelessWidget {
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
         Slider(
+          year2023: false,
           value: settings.alarmRadius,
           min: 10,
           max: 100,
