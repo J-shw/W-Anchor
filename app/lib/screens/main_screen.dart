@@ -4,6 +4,7 @@ import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/screens/anchor_screen.dart';
 import 'package:w_anchor/screens/history_screen.dart';
 import 'package:w_anchor/screens/settings_screen.dart';
+import 'package:w_anchor/widgets/main_navigation_bar.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -90,23 +91,9 @@ class _MainScreenState extends State<MainScreen> {
       body: _pages[_selectedIndex],
       floatingActionButton: _buildFab(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.anchor),
-            label: 'Anchor',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: MainNavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _onItemTapped,
       ),
     );
   }
