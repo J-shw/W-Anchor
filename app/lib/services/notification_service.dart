@@ -14,27 +14,44 @@ class NotificationService {
   }
 
   Future<void> createNotificationChannel() async {
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      notificationChannelId,
-      'W Anchor Service',
-      description: 'W Anchor is monitoring your position.',
+    const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
+      serviceChannelId,
+      'W Anchor Service Status',
+      description: 'Low-priority ongoing monitoring status.',
       importance: Importance.low,
       playSound: false,
     );
+    
+    const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
+      alarmChannelId,
+      'W Anchor Alarm',
+      description: 'Critical alerts when the anchor is dragged.',
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+      enableLights: true,
+    );
+
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+        ?.createNotificationChannel(serviceChannel);
+
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(alarmChannel);
   }
 
-  void showNotification(String title, String content) {
+  /// Show a low-priority status notification
+  void showStatusNotification(String content) {
     _flutterLocalNotificationsPlugin.show(
-      notificationId,
-      title,
+      serviceNotificationId,
+      "Background Status",
       content,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          notificationChannelId,
+          serviceChannelId,
           'W Anchor Service',
           icon: '@mipmap/ic_launcher',
           ongoing: true,
@@ -45,4 +62,24 @@ class NotificationService {
       ),
     );
   }
+
+  /// Show a high-priority alarm notification
+  void showAlarmNotification(String content) {
+    _flutterLocalNotificationsPlugin.show(
+      alarmNotificationId,
+      "Anchor Alarm",
+      content,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          alarmChannelId,
+          'W Anchor Service',
+          icon: '@mipmap/ic_launcher',
+          ongoing: true,
+          playSound: true,
+          importance: Importance.max,
+          priority: Priority.max,
+        ),
+      ),
+    );
+}
 }
