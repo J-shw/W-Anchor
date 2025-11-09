@@ -41,11 +41,7 @@ jobs:
 
       - name: Build Android App Bundle (AAB)
         working-directory: ./app
-        run: flutter build appbundle --release
-
-      - name: Build Android APK
-        working-directory: ./app
-        run: flutter build apk --release      
+        run: flutter build appbundle --release  
 
       - name: Upload App Bundle as an artifact
         uses: actions/upload-artifact@v4
@@ -53,22 +49,6 @@ jobs:
           name: menstrudel-release-aab
           path: ./app/build/app/outputs/bundle/release/app-release.aab
 
-      - name: Upload APK as an artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: menstrudel-release-apk
-          path: ./app/build/app/outputs/flutter-apk/app-release.apk
-
       - name: Get version from Git tag
         id: get_version
         run: echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-
-      - name: Upload APK to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./app/build/app/outputs/flutter-apk/app-release.apk
-          asset_name: w-anchor-${{ env.VERSION }}.apk
-          asset_content_type: application/vnd.android.package-archive
