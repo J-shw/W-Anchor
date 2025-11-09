@@ -1,7 +1,7 @@
 name: w_anchor
-description: "An anchor drag alarm application."
+description: "A modern, reliable anchor alarm that monitors boat drift."
 publish_to: 'none'
-version: 0.0.0
+version: 0.1.0
 
 environment:
   sdk: ^3.9.2
