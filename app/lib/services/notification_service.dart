@@ -44,10 +44,10 @@ class NotificationService {
   }
 
   /// Show a low-priority status notification
-  void showStatusNotification(String title, String content) {
+  void showStatusNotification(String content) {
     _flutterLocalNotificationsPlugin.show(
       serviceNotificationId,
-      title,
+      "Background Status",
       content,
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -64,10 +64,10 @@ class NotificationService {
   }
 
   /// Show a high-priority alarm notification
-  void showAlarmNotification(String title, String content) {
+  void showAlarmNotification(String content) {
     _flutterLocalNotificationsPlugin.show(
       alarmNotificationId,
-      title,
+      "Anchor Alarm",
       content,
       const NotificationDetails(
         android: AndroidNotificationDetails(
