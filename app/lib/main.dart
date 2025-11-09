@@ -50,10 +50,10 @@ Future<void> initializeService() async {
       onStart: onStart,
       autoStart: true,
       isForegroundMode: true,
-      notificationChannelId: notificationChannelId,
+      notificationChannelId: serviceChannelId,
       initialNotificationTitle: 'W Anchor',
       initialNotificationContent: 'Initializing service...',
-      foregroundServiceNotificationId: notificationId,
+      foregroundServiceNotificationId: serviceNotificationId,
     ),
     iosConfiguration: IosConfiguration(), 
   );
