@@ -29,13 +29,15 @@ class AnchoringSession {
     };
   }
 
-  factory AnchoringSession.fromMap(Map<String, dynamic> map) {
+factory AnchoringSession.fromMap(Map<String, dynamic> map) {
     return AnchoringSession(
       id: map['id'],
       startDatetime: map['start_datetime'],
       endDatetime: map['end_datetime'],
-      latitude: map['latitude'],
-      longitude: map['longitude'],
+      
+      latitude: (map['latitude'] as num).toDouble(),
+      longitude: (map['longitude'] as num).toDouble(),
+      
       active: map['active'] == 1,
       name: map['name'],
     );

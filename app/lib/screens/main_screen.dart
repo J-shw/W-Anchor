@@ -22,25 +22,9 @@ class _MainScreenState extends State<MainScreen> {
     SettingsScreen(),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    if (_selectedIndex == 0) {
-      Provider.of<AnchorProvider>(context, listen: false).startGpsStream();
-    }
-  }
-
   void _onItemTapped(int index) {
-    final provider = Provider.of<AnchorProvider>(context, listen: false);
-
-    if (index == 0) {
-      provider.startGpsStream();
-    } else {
-      provider.stopGpsStream();
-    }
-
     if (index == 1) {
+      final provider = Provider.of<AnchorProvider>(context, listen: false);
       provider.loadHistory();
     }
 

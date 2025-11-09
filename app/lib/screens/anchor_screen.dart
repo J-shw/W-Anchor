@@ -47,7 +47,7 @@ class _AnchorScreenState extends State<AnchorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AnchorProvider>();
+    final AnchorProvider provider = context.watch<AnchorProvider>();
 
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -130,15 +130,14 @@ class _AnchorScreenState extends State<AnchorScreen> {
                 onMapCreated: (controller) {
                   context.read<AnchorProvider>().setMapController(controller);
                 },
-                initialCameraPosition: const CameraPosition(
-                  target: LatLng(0, -0),
-                  zoom: 11.0,
+                initialCameraPosition: CameraPosition(
+                  target: provider.currentPosition,
+                  zoom: 15.0,
                 ),
                 myLocationEnabled: provider.alarmStatus != AlarmStatus.noGps,
                 myLocationButtonEnabled: true,
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
-                compassEnabled: true,
                 markers: provider.mapMarkers,
                 circles: provider.mapCircles,
               ),
