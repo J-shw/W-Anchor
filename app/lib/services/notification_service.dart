@@ -83,5 +83,9 @@ class NotificationService {
         ),
       ),
     );
-}
+  }
+
+  Future<void> dismissAlarmNotification() async {
+    await _flutterLocalNotificationsPlugin.cancel(alarmNotificationId);
+  }
 }
