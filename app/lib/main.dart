@@ -64,6 +64,7 @@ class MyApp extends StatelessWidget {
     final themeMode = context.watch<SettingsProvider>().theme;
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'W Anchor',
       
       themeMode: switch (themeMode) {
