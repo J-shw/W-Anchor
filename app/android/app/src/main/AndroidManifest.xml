@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
-        android:label="w_anchor"
+        android:label="W Anchor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <meta-data
