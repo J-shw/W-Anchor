@@ -73,11 +73,11 @@ class AnchorProvider with ChangeNotifier {
         _distanceFromAnchor = (data['distance'] as num).toDouble();
       }
       if (data.containsKey('alarmStatus')) {
-        _alarmStatus = AlarmStatus.values[data['alarmStatus']];
+        _alarmStatus = AlarmStatus.values[data['alarmStatus'] as int];
       }
       if (data.containsKey('lastGpsRefresh')) {
         _lastGpsRefresh =
-            DateTime.fromMillisecondsSinceEpoch(data['lastGpsRefresh']);
+            DateTime.fromMillisecondsSinceEpoch(data['lastGpsRefresh'] as int);
       }
       notifyListeners();
     });

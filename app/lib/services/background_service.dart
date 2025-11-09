@@ -68,8 +68,8 @@ void onStart(ServiceInstance service) async {
             service.invoke('updateUI', {
               'latitude': position.latitude,
               'longitude': position.longitude,
-              'accuracy': position.accuracy,
-              'distance': distance,
+              'accuracy': position.accuracy.toDouble(),
+              'distance': distance.toDouble(),
               'alarmStatus': alarmStatus.index,
               'lastGpsRefresh': lastGpsRefresh!.millisecondsSinceEpoch,
             });
@@ -125,7 +125,7 @@ void onStart(ServiceInstance service) async {
 
   service.on('updateSettings').listen((map) {
     if (map != null && map.containsKey('alarmRadius')) {
-      currentAlarmRadius = map['alarmRadius'];
+      currentAlarmRadius = (map['alarmRadius'] as num).toDouble();
     }
   });
 
