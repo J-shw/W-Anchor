@@ -20,16 +20,12 @@ void onStart(ServiceInstance service) async {
   AlarmStatus alarmStatus = AlarmStatus.none;
   bool alarmTriggered = false;
 
-  notificationService.showStatusNotification(
-    "W Anchor",
-    "Monitoring your anchor position.",
-  );
+  notificationService.showStatusNotification("Service is running...");
 
   final permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied ||
       permission == LocationPermission.deniedForever) {
     notificationService.showStatusNotification(
-      "W Anchor",
       "Service is running, but location is denied.",
     );
   } else {
@@ -53,18 +49,17 @@ void onStart(ServiceInstance service) async {
                 position.longitude,
               );
               isOutside = distance > currentAlarmRadius;
-            }
 
-            if (activeSession != null) {
-                if (isOutside) {
-                    alarmStatus = AlarmStatus.outsideRadius;
-                } else {
-                    alarmStatus = AlarmStatus.none;
+              if (isOutside) {
+                alarmStatus = AlarmStatus.outsideRadius;
+              } else {
+                if (alarmStatus != AlarmStatus.noGps) {
+                  alarmStatus = AlarmStatus.none;
                 }
+              }
             } else {
-                alarmStatus = AlarmStatus.none;
+              alarmStatus = AlarmStatus.none;
             }
-
 
             service.invoke('updateUI', {
               'latitude': position.latitude,
@@ -75,18 +70,22 @@ void onStart(ServiceInstance service) async {
               'lastGpsRefresh': lastGpsRefresh!.millisecondsSinceEpoch,
             });
 
-            if (alarmStatus == AlarmStatus.none) {
-              notificationService.showStatusNotification("W Anchor", "All clear. Monitoring.");
-              alarmTriggered = false;
-            }
-            else if (alarmStatus == AlarmStatus.noGps) {
-              notificationService.showStatusNotification("W Anchor", "WARNING: No GPS signal...");
-            }
-            else if (alarmStatus == AlarmStatus.outsideRadius) {
-              if (!alarmTriggered) {
-                alarmTriggered = true;
-                 notificationService.showStatusNotification("W Anchor", "ALARM: Outside radius!");
-                notificationService.showAlarmNotification("W Anchor", "ALARM: Outside radius!");
+            if (activeSession != null) {
+              if (alarmStatus == AlarmStatus.none) {
+                notificationService.showStatusNotification(
+                  "All clear. Monitoring.",
+                );
+                alarmTriggered = false;
+              } else if (alarmStatus == AlarmStatus.noGps) {
+                notificationService.showStatusNotification("No GPS signal...");
+              } else if (alarmStatus == AlarmStatus.outsideRadius) {
+                if (!alarmTriggered) {
+                  alarmTriggered = true;
+                  String alarmContent =
+                      "Outside radius! (${distance.toStringAsFixed(0)}m)";
+                  notificationService.showStatusNotification(alarmContent);
+                  notificationService.showAlarmNotification(alarmContent);
+                }
               }
             }
           }
@@ -102,7 +101,7 @@ void onStart(ServiceInstance service) async {
     if (secondsSinceUpdate > 15 && alarmStatus != AlarmStatus.outsideRadius) {
       alarmStatus = AlarmStatus.noGps;
       service.invoke('updateUI', {'alarmStatus': alarmStatus.index});
-      notificationService.showStatusNotification("W Anchor", "WARNING: No GPS signal...");
+      notificationService.showStatusNotification("No GPS signal...");
     }
   });
 
@@ -114,7 +113,7 @@ void onStart(ServiceInstance service) async {
       'distance': 0.0,
       'alarmStatus': alarmStatus.index,
     });
-    notificationService.showStatusNotification("W Anchor", "Anchor set. All clear.");
+    notificationService.showStatusNotification("Anchor set. All clear.");
   });
 
   service.on('stopAnchor').listen((map) {
@@ -126,7 +125,7 @@ void onStart(ServiceInstance service) async {
       'distance': 0.0,
       'alarmStatus': alarmStatus.index,
     });
-    notificationService.showStatusNotification("W Anchor", "Anchor monitoring stopped.");
+    notificationService.showStatusNotification("Anchor monitoring stopped.");
   });
 
   service.on('updateSettings').listen((map) {
