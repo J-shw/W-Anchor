@@ -16,7 +16,6 @@ class AnchorScreen extends StatefulWidget {
 class _AnchorScreenState extends State<AnchorScreen> {
   Timer? _timer;
   String _timeSinceUpdate = '--';
-  bool _hasCenteredMap = false;
 
   @override
   void initState() {
@@ -48,7 +47,7 @@ class _AnchorScreenState extends State<AnchorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AnchorProvider>();
+    final AnchorProvider provider = context.watch<AnchorProvider>();
 
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -131,9 +130,9 @@ class _AnchorScreenState extends State<AnchorScreen> {
                 onMapCreated: (controller) {
                   context.read<AnchorProvider>().setMapController(controller);
                 },
-                initialCameraPosition: const CameraPosition(
-                  target: LatLng(0, 0),
-                  zoom: 11.0,
+                initialCameraPosition: CameraPosition(
+                  target: provider.currentPosition,
+                  zoom: 15.0,
                 ),
                 myLocationEnabled: provider.alarmStatus != AlarmStatus.noGps,
                 myLocationButtonEnabled: true,
