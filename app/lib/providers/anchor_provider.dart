@@ -16,7 +16,7 @@ class AnchorProvider with ChangeNotifier {
   SettingsProvider? _settings;
   DateTime? _lastGpsRefresh;
   AlarmStatus _alarmStatus = AlarmStatus.none;
-
+  bool _hasCenteredMap = false;
   double _currentAccuracy = 0.0;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   double _distanceFromAnchor = 0.0;
@@ -61,6 +61,13 @@ class AnchorProvider with ChangeNotifier {
           (data['longitude'] as num).toDouble()
         );
         _currentAccuracy = (data['accuracy'] as num).toDouble();
+        
+        if (!_hasCenteredMap && _mapController != null && _currentAccuracy < 50.0) {
+          _mapController!.animateCamera(
+            CameraUpdate.newLatLngZoom(_currentPosition, 15.0),
+          );
+          _hasCenteredMap = true;
+        }
       }
       if (data.containsKey('distance')) {
         _distanceFromAnchor = (data['distance'] as num).toDouble();
