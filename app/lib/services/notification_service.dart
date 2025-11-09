@@ -16,7 +16,7 @@ class NotificationService {
   Future<void> createNotificationChannel() async {
     const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
       serviceChannelId,
-      'W Anchor Service Status',
+      'Service Status',
       description: 'Low-priority ongoing monitoring status.',
       importance: Importance.low,
       playSound: false,
@@ -24,8 +24,8 @@ class NotificationService {
     
     const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
       alarmChannelId,
-      'W Anchor Alarm',
-      description: 'Critical alerts when the anchor is dragged.',
+      'Alarms',
+      description: 'Critical alerts.',
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
