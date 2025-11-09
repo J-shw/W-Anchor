@@ -125,6 +125,7 @@ void onStart(ServiceInstance service) async {
       'distance': 0.0,
       'alarmStatus': alarmStatus.index,
     });
+    notificationService.dismissAlarmNotification();
     notificationService.showStatusNotification("Anchor monitoring stopped.");
   });
 
