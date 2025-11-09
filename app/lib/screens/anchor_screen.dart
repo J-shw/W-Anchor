@@ -129,16 +129,21 @@ class _AnchorScreenState extends State<AnchorScreen> {
               child: GoogleMap(
                 onMapCreated: (controller) {
                   context.read<AnchorProvider>().setMapController(controller);
+                  final currentPosition = provider.currentPosition;
+                  if (currentPosition.latitude != 0.0 || currentPosition.longitude != 0.0) {
+                    controller.animateCamera(
+                      CameraUpdate.newLatLngZoom(currentPosition, 15.0),
+                    );
+                  }
                 },
                 initialCameraPosition: const CameraPosition(
-                  target: LatLng(0, -0),
+                  target: LatLng(0, 0),
                   zoom: 11.0,
                 ),
                 myLocationEnabled: provider.alarmStatus != AlarmStatus.noGps,
                 myLocationButtonEnabled: true,
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
-                compassEnabled: true,
                 markers: provider.mapMarkers,
                 circles: provider.mapCircles,
               ),
