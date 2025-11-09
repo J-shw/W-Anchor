@@ -2,7 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:w_anchor/utils/constants.dart';
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
@@ -20,6 +20,7 @@ class NotificationService {
       description: 'Low-priority ongoing monitoring status.',
       importance: Importance.low,
       playSound: false,
+      showBadge: false
     );
     
     const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
@@ -27,9 +28,12 @@ class NotificationService {
       'Alarms',
       description: 'Critical alerts.',
       importance: Importance.max,
+      sound: RawResourceAndroidNotificationSound('anchor_alarm'),
       playSound: true,
       enableVibration: true,
       enableLights: true,
+      audioAttributesUsage: AudioAttributesUsage.alarm,
+      showBadge: true
     );
 
     await _flutterLocalNotificationsPlugin
@@ -52,12 +56,10 @@ class NotificationService {
       const NotificationDetails(
         android: AndroidNotificationDetails(
           serviceChannelId,
-          'W Anchor Service',
+          'Service Status',
           icon: '@mipmap/ic_launcher',
           ongoing: true,
           playSound: false,
-          importance: Importance.low,
-          priority: Priority.low,
         ),
       ),
     );
@@ -72,14 +74,18 @@ class NotificationService {
       const NotificationDetails(
         android: AndroidNotificationDetails(
           alarmChannelId,
-          'W Anchor Service',
+          'Alarms',
           icon: '@mipmap/ic_launcher',
           ongoing: true,
           playSound: true,
-          importance: Importance.max,
-          priority: Priority.max,
+          enableVibration: true,
+          enableLights: true,
         ),
       ),
     );
-}
+  }
+
+  Future<void> dismissAlarmNotification() async {
+    await _flutterLocalNotificationsPlugin.cancel(alarmNotificationId);
+  }
 }

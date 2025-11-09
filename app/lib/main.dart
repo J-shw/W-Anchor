@@ -7,9 +7,6 @@ import 'package:w_anchor/providers/settings_provider.dart';
 import 'package:w_anchor/utils/constants.dart';
 import 'package:w_anchor/services/background_service.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:w_anchor/services/notification_service.dart';
-
-final NotificationService notificationService = NotificationService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
