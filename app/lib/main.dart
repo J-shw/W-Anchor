@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
-import 'package:w_anchor/screens/main_screen.dart';
 import 'package:w_anchor/providers/settings_provider.dart';
 import 'package:w_anchor/utils/constants.dart';
 import 'package:w_anchor/services/background_service.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:w_anchor/screens/permission_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await notificationService.initialize();
   await notificationService.createNotificationChannel();
-  
-  await Permission.location.request();
-  await Permission.locationAlways.request();
-  await Permission.notification.request();
-
 
   await initializeService();
 
@@ -75,7 +69,7 @@ class MyApp extends StatelessWidget {
       
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
-      home: const MainScreen(),
+      home: const PermissionScreen(),
     );
   }
 }
