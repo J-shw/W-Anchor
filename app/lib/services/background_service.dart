@@ -32,7 +32,7 @@ void onStart(ServiceInstance service) async {
     positionStream =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.bestForNavigation,
+            accuracy: LocationAccuracy.best,
             distanceFilter: 0,
           ),
         ).listen((Position? position) {
