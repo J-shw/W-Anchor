@@ -16,6 +16,7 @@ class AnchorScreen extends StatefulWidget {
 class _AnchorScreenState extends State<AnchorScreen> {
   Timer? _timer;
   String _timeSinceUpdate = '--';
+  bool _hasCenteredMap = false;
 
   @override
   void initState() {
@@ -27,6 +28,22 @@ class _AnchorScreenState extends State<AnchorScreen> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  void _panToCurrentLocation() {
+    final provider = context.read<AnchorProvider>();
+    final LatLng currentPosition = provider.currentPosition;
+    final GoogleMapController? controller = provider.mapController;
+
+    if (!_hasCenteredMap && 
+        controller != null && 
+        (currentPosition.latitude != 0.0 || currentPosition.longitude != 0.0)) {
+      
+      controller.animateCamera(
+        CameraUpdate.newLatLngZoom(currentPosition, 15.0),
+      );
+      _hasCenteredMap = true;
+    }
   }
 
   void _updateTime(Timer timer) {
@@ -129,12 +146,7 @@ class _AnchorScreenState extends State<AnchorScreen> {
               child: GoogleMap(
                 onMapCreated: (controller) {
                   context.read<AnchorProvider>().setMapController(controller);
-                  final currentPosition = provider.currentPosition;
-                  if (currentPosition.latitude != 0.0 || currentPosition.longitude != 0.0) {
-                    controller.animateCamera(
-                      CameraUpdate.newLatLngZoom(currentPosition, 15.0),
-                    );
-                  }
+                  _panToCurrentLocation();
                 },
                 initialCameraPosition: const CameraPosition(
                   target: LatLng(0, 0),
