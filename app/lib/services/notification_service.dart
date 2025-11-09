@@ -7,7 +7,7 @@ class NotificationService {
 
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_launcher_monochrome');
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -57,7 +57,7 @@ class NotificationService {
         android: AndroidNotificationDetails(
           serviceChannelId,
           'Service Status',
-          icon: '@mipmap/ic_launcher',
+          icon: '@drawable/ic_launcher_monochrome',
           ongoing: true,
           playSound: false,
         ),
@@ -75,7 +75,7 @@ class NotificationService {
         android: AndroidNotificationDetails(
           alarmChannelId,
           'Alarms',
-          icon: '@mipmap/ic_launcher',
+          icon: '@drawable/ic_launcher_monochrome',
           ongoing: true,
           playSound: true,
           enableVibration: true,
