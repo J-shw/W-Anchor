@@ -32,6 +32,7 @@ class AnchorProvider with ChangeNotifier {
   DateTime? get lastGpsRefresh => _lastGpsRefresh;
   bool get isAlarmActive => _alarmStatus != AlarmStatus.none;
   AlarmStatus get alarmStatus => _alarmStatus;
+  GoogleMapController? get mapController => _mapController;
 
   String get alarmMessage {
     switch (_alarmStatus) {
