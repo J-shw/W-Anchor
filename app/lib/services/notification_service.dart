@@ -60,8 +60,6 @@ class NotificationService {
           icon: '@mipmap/ic_launcher',
           ongoing: true,
           playSound: false,
-          importance: Importance.low,
-          priority: Priority.low,
         ),
       ),
     );
@@ -79,12 +77,9 @@ class NotificationService {
           'Alarms',
           icon: '@mipmap/ic_launcher',
           ongoing: true,
-          importance: Importance.max,
-          sound: RawResourceAndroidNotificationSound('anchor_alarm'),
           playSound: true,
           enableVibration: true,
           enableLights: true,
-          audioAttributesUsage: AudioAttributesUsage.alarm,
         ),
       ),
     );
