@@ -1,5 +1,7 @@
 <div align="center">
-  <img src="icon/w_anchor.png" alt="W Anchor App Icon" width="120">
+    <div style="background-color: '#fffff'">
+        <img src="icon/w_anchor.png" alt="W Anchor App Icon" width="120">
+    </div>
 
   # W Anchor
 
