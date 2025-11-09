@@ -5,13 +5,17 @@ import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/screens/main_screen.dart';
 import 'package:w_anchor/providers/settings_provider.dart';
 import 'package:w_anchor/utils/constants.dart';
-import 'package:w_anchor/service/background_service.dart';
+import 'package:w_anchor/services/background_service.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:w_anchor/services/notification_service.dart';
 
+final NotificationService notificationService = NotificationService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await notificationService.initialize();
+  await notificationService.createNotificationChannel();
   
   await Permission.location.request();
   await Permission.locationAlways.request();
@@ -40,16 +44,7 @@ Future<void> main() async {
 
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
-
-  // --- Notification Setup ---
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  // --- Configure for Android ---
+  
   await service.configure(
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
@@ -57,7 +52,7 @@ Future<void> initializeService() async {
       isForegroundMode: true,
       notificationChannelId: notificationChannelId,
       initialNotificationTitle: 'W Anchor',
-      initialNotificationContent: 'Initialising...',
+      initialNotificationContent: 'Initializing service...',
       foregroundServiceNotificationId: notificationId,
     ),
     iosConfiguration: IosConfiguration(), 
