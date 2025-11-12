@@ -1,5 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:w_anchor/utils/constants.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  if (notificationResponse.actionId == 'stop_service_action') {
+    FlutterBackgroundService().invoke("stop_service_command");
+  }
+}
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
@@ -10,7 +18,10 @@ class NotificationService {
         AndroidInitializationSettings('@drawable/ic_launcher_monochrome');
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await _flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+        onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+    );
   }
 
   Future<void> createNotificationChannel() async {
@@ -53,7 +64,7 @@ class NotificationService {
       serviceNotificationId,
       "Background Status",
       content,
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           serviceChannelId,
           'Service Status',
@@ -65,6 +76,7 @@ class NotificationService {
             stopActionId,
             'STOP',
             cancelNotification: true,
+            showsUserInterface: false,
           ),
         ],
         ),
