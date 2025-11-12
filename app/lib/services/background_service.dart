@@ -105,6 +105,13 @@ void onStart(ServiceInstance service) async {
     }
   });
 
+  service.on('stop_service_command').listen((event) {
+    positionStream?.cancel();
+    gpsWatchdogTimer?.cancel();
+    notificationService.dismissAlarmNotification();
+    service.stopSelf();
+  });
+
   service.on('setAnchor').listen((map) {
     activeSession = AnchoringSession.fromMap(map!['session']);
     lastGpsRefresh = DateTime.now();
