@@ -26,3 +26,7 @@ const String serviceChannelId = 'w_anchor_service_status';
 const String alarmChannelId = 'w_anchor_service_alarm';
 const int serviceNotificationId = 1;
 const int alarmNotificationId = 2;
+
+// Action IDs for notification actions
+
+const String stopActionId = 'stop_service';
