@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:w_anchor/screens/main_screen.dart';
 
-
-Future<bool> requestCriticalPermissions() async {
+/// Checks critical permissions: location and background location.
+/// Returns true if all required location permissions are granted.
+Future<bool> requestCriticalLocationPermissions() async {
   PermissionStatus locationStatus = await Permission.location.request();
   
   if (locationStatus.isDenied || locationStatus.isPermanentlyDenied) {
     return false;
   }
-
-  await Permission.notification.request();
 
   PermissionStatus backgroundStatus = await Permission.locationAlways.status;
 
@@ -39,7 +38,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
   void _checkAndRequestPermissions() async {
     await Permission.notification.request();
-    bool granted = await requestCriticalPermissions();
+    bool granted = await requestCriticalLocationPermissions();
     
     if (mounted) {
       setState(() {
