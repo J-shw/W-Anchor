@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:w_anchor/utils/constants.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  if (notificationResponse.actionId == 'stop_service_action') {
-    FlutterBackgroundService().invoke("stop_service_command");
+  debugPrint('notification tap background: $notificationResponse');
+  if (notificationResponse.actionId == stopActionId) {
+    FlutterBackgroundService().invoke(stopServiceCommand);
   }
 }
 
@@ -20,6 +22,7 @@ class NotificationService {
         InitializationSettings(android: initializationSettingsAndroid);
     await _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
+        onDidReceiveNotificationResponse: notificationTapBackground,
         onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
   }
