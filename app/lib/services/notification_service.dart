@@ -5,7 +5,12 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  debugPrint('notification tap background: $notificationResponse');
+  if (notificationResponse.actionId == null) {
+    debugPrint('Notification tap event was null. Cannot process command.');
+    return;
+  }
+
+  debugPrint('notification tap background: ${notificationResponse.actionId}');
   if (notificationResponse.actionId == stopActionId) {
     FlutterBackgroundService().invoke(stopServiceCommand);
   }
@@ -78,7 +83,7 @@ class NotificationService {
           AndroidNotificationAction(
             stopActionId,
             'STOP',
-            cancelNotification: true,
+            // cancelNotification: true,
             showsUserInterface: false,
           ),
         ],
