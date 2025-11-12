@@ -30,3 +30,7 @@ const int alarmNotificationId = 2;
 // Action IDs for notification actions
 
 const String stopActionId = 'stop_service';
+
+// Background service constants
+
+const String stopServiceCommand = 'stop_service_command';
