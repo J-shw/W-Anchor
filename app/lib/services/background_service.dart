@@ -105,7 +105,8 @@ void onStart(ServiceInstance service) async {
     }
   });
 
-  service.on('stop_service_command').listen((event) {
+  service.on(stopServiceCommand).listen((event) {
+    notificationService.showStatusNotification("Stopping service...");
     positionStream?.cancel();
     gpsWatchdogTimer?.cancel();
     notificationService.dismissAlarmNotification();
@@ -140,11 +141,5 @@ void onStart(ServiceInstance service) async {
     if (map != null && map.containsKey('alarmRadius')) {
       currentAlarmRadius = (map['alarmRadius'] as num).toDouble();
     }
-  });
-
-  service.on('stop').listen((map) {
-    positionStream?.cancel();
-    gpsWatchdogTimer?.cancel();
-    service.stopSelf();
   });
 }
