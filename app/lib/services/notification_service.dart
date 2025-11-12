@@ -60,6 +60,13 @@ class NotificationService {
           icon: '@drawable/ic_launcher_monochrome',
           ongoing: true,
           playSound: false,
+          actions: <AndroidNotificationAction>[
+          AndroidNotificationAction(
+            stopActionId,
+            'STOP',
+            cancelNotification: true,
+          ),
+        ],
         ),
       ),
     );
