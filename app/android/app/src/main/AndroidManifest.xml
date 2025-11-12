@@ -14,6 +14,12 @@
         <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyDyDKa0VhNb82XDO6PJ2uHpwUWOeH6q8Ic"/>
+        <meta-data
+        android:name="flutterLocalNotificationsPluginPermission"
+        android:value="true" />
+        <meta-data
+        android:name="com.dexterous.flutterlocalnotifications.default_action_route"
+        android:value="true" />
 
         <activity
             android:name=".MainActivity"
