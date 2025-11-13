@@ -20,7 +20,14 @@
         <meta-data
         android:name="com.dexterous.flutterlocalnotifications.default_action_route"
         android:value="true" />
-
+        <meta-data
+        android:name="flutter.background_service.default_notification_icon"
+        android:resource="@drawable/ic_service_icon" />
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:exported="false"
+            android:foregroundServiceType="location"
+            tools:replace="android:exported"  />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -43,11 +50,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service
-            android:name="id.flutter.flutter_background_service.BackgroundService"
-            android:exported="false"
-            android:foregroundServiceType="location"
-            tools:replace="android:exported"  />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
