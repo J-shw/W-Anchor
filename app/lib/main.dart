@@ -13,7 +13,7 @@ Future<void> main() async {
   await notificationService.initialize();
   await notificationService.createNotificationChannel();
 
-  await initializeService();
+  await initializeForegroundService();
 
   runApp(
     MultiProvider(
@@ -33,7 +33,7 @@ Future<void> main() async {
   );
 }
 
-Future<void> initializeService() async {
+Future<void> initializeForegroundService() async {
   final service = FlutterBackgroundService();
   
   await service.configure(
@@ -41,6 +41,7 @@ Future<void> initializeService() async {
       onStart: onStart,
       autoStart: true,
       isForegroundMode: true,
+      autoStartOnBoot: false,
       notificationChannelId: serviceChannelId,
       initialNotificationTitle: 'W Anchor',
       initialNotificationContent: 'Initializing service...',
