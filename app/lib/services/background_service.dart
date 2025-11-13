@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:w_anchor/models/anchoring_session.dart';
 import 'package:w_anchor/utils/constants.dart';
 import 'package:w_anchor/services/notification_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final NotificationService notificationService = NotificationService();
 
@@ -20,14 +21,38 @@ void onStart(ServiceInstance service) async {
   AlarmStatus alarmStatus = AlarmStatus.none;
   bool alarmTriggered = false;
 
-  notificationService.showStatusNotification("Service is running...");
+  if (service is AndroidServiceInstance) {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
+      serviceChannelId,
+      'Service Status',
+      description: 'Low-priority ongoing monitoring status.',
+      importance: Importance.low,
+      playSound: false,
+      showBadge: false,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(serviceChannel);
+    
+    service.setAsForegroundService();
+    service.setForegroundNotificationInfo(
+      title: 'W Anchor',
+      content: 'Initializing service...',
+    );
+  }
+
+  //notificationService.showStatusNotification("Service is running...");
 
   final permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied ||
       permission == LocationPermission.deniedForever) {
-    notificationService.showStatusNotification(
-      "Service is running, but location is denied.",
-    );
+    // notificationService.showStatusNotification(
+    //   "Service is running, but location is denied.",
+    // );
   } else {
     positionStream =
         Geolocator.getPositionStream(
@@ -70,24 +95,22 @@ void onStart(ServiceInstance service) async {
               'lastGpsRefresh': lastGpsRefresh!.millisecondsSinceEpoch,
             });
 
-            if (activeSession != null) {
-              if (alarmStatus == AlarmStatus.none) {
-                notificationService.showStatusNotification(
-                  "All clear. Monitoring.",
-                );
-                alarmTriggered = false;
-              } else if (alarmStatus == AlarmStatus.noGps) {
-                notificationService.showStatusNotification("No GPS signal...");
-              } else if (alarmStatus == AlarmStatus.outsideRadius) {
-                if (!alarmTriggered) {
-                  alarmTriggered = true;
-                  String alarmContent =
-                      "Outside radius! (${distance.toStringAsFixed(0)}m)";
-                  notificationService.showStatusNotification(alarmContent);
-                  notificationService.showAlarmNotification(alarmContent);
-                }
-              }
-            }
+            // if (activeSession != null) {
+            //   if (alarmStatus == AlarmStatus.none) {
+            //     //notificationService.showStatusNotification("All clear. Monitoring.",);
+            //     alarmTriggered = false;
+            //   } else if (alarmStatus == AlarmStatus.noGps) {
+            //     notificationService.showStatusNotification("No GPS signal...");
+            //   } else if (alarmStatus == AlarmStatus.outsideRadius) {
+            //     if (!alarmTriggered) {
+            //       alarmTriggered = true;
+            //       String alarmContent =
+            //           "Outside radius! (${distance.toStringAsFixed(0)}m)";
+            //       notificationService.showStatusNotification(alarmContent);
+            //       notificationService.showAlarmNotification(alarmContent);
+            //     }
+            //   }
+            // }
           }
         });
   }
@@ -101,12 +124,12 @@ void onStart(ServiceInstance service) async {
     if (secondsSinceUpdate > 15 && alarmStatus != AlarmStatus.outsideRadius) {
       alarmStatus = AlarmStatus.noGps;
       service.invoke('updateUI', {'alarmStatus': alarmStatus.index});
-      notificationService.showStatusNotification("No GPS signal...");
+      // notificationService.showStatusNotification("No GPS signal...");
     }
   });
 
   service.on(stopServiceCommand).listen((event) {
-    notificationService.showStatusNotification("Stopping service...");
+    //notificationService.showStatusNotification("Stopping service...");
     positionStream?.cancel();
     gpsWatchdogTimer?.cancel();
     notificationService.dismissAlarmNotification();
@@ -121,7 +144,7 @@ void onStart(ServiceInstance service) async {
       'distance': 0.0,
       'alarmStatus': alarmStatus.index,
     });
-    notificationService.showStatusNotification("Anchor set. All clear.");
+    //notificationService.showStatusNotification("Anchor set. All clear.");
   });
 
   service.on('stopAnchor').listen((map) {
@@ -134,7 +157,7 @@ void onStart(ServiceInstance service) async {
       'alarmStatus': alarmStatus.index,
     });
     notificationService.dismissAlarmNotification();
-    notificationService.showStatusNotification("Anchor monitoring stopped.");
+    //notificationService.showStatusNotification("Anchor monitoring stopped.");
   });
 
   service.on('updateSettings').listen((map) {

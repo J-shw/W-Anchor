@@ -33,14 +33,14 @@ class NotificationService {
   }
 
   Future<void> createNotificationChannel() async {
-    const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
-      serviceChannelId,
-      'Service Status',
-      description: 'Low-priority ongoing monitoring status.',
-      importance: Importance.low,
-      playSound: false,
-      showBadge: false
-    );
+    // const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
+    //   serviceChannelId,
+    //   'Service Status',
+    //   description: 'Low-priority ongoing monitoring status.',
+    //   importance: Importance.low,
+    //   playSound: false,
+    //   showBadge: false,
+    // );
     
     const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
       alarmChannelId,
@@ -55,10 +55,10 @@ class NotificationService {
       showBadge: true
     );
 
-    await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(serviceChannel);
+    // await _flutterLocalNotificationsPlugin
+    //     .resolvePlatformSpecificImplementation<
+    //         AndroidFlutterLocalNotificationsPlugin>()
+    //     ?.createNotificationChannel(serviceChannel);
 
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -67,30 +67,32 @@ class NotificationService {
   }
 
   /// Show a low-priority status notification
-  void showStatusNotification(String content) {
-    _flutterLocalNotificationsPlugin.show(
-      serviceNotificationId,
-      "Background Status",
-      content,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          serviceChannelId,
-          'Service Status',
-          icon: '@drawable/ic_launcher_monochrome',
-          ongoing: true,
-          playSound: false,
-          actions: <AndroidNotificationAction>[
-          AndroidNotificationAction(
-            stopActionId,
-            'STOP',
-            // cancelNotification: true,
-            showsUserInterface: false,
-          ),
-        ],
-        ),
-      ),
-    );
-  }
+  // void showStatusNotification(String content) {
+  //   _flutterLocalNotificationsPlugin.show(
+  //     serviceNotificationId,
+  //     "Background Status",
+  //     content,
+  //     NotificationDetails(
+  //       android: AndroidNotificationDetails(
+  //         serviceChannelId,
+  //         'Service Status',
+  //         icon: '@drawable/ic_launcher_monochrome',
+  //         ongoing: true,
+  //         playSound: false,
+  //         autoCancel: false,
+  //         category: AndroidNotificationCategory.service,
+  //         actions: <AndroidNotificationAction>[
+  //         AndroidNotificationAction(
+  //           stopActionId,
+  //           'STOP',
+  //           // cancelNotification: true,
+  //           showsUserInterface: false,
+  //         ),
+  //       ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   /// Show a high-priority alarm notification
   void showAlarmNotification(String content) {
