@@ -16,6 +16,7 @@ void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
   if (service is AndroidServiceInstance) {
+    service.setAsForegroundService();
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
