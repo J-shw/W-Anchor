@@ -39,7 +39,7 @@ Future<void> initializeForegroundService() async {
   await service.configure(
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
-      autoStart: true,
+      autoStart: false,
       isForegroundMode: true,
       autoStartOnBoot: false,
       notificationChannelId: serviceChannelId,
