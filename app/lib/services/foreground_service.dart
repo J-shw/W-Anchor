@@ -27,10 +27,10 @@ void onStart(ServiceInstance service) async {
     const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
       serviceChannelId,
       'Service Status',
-      description: 'Low-priority ongoing monitoring status.',
+      description: 'Ongoing monitoring status.',
       importance: Importance.defaultImportance,
       playSound: false,
-      showBadge: false,
+      showBadge: true,
     );
 
     await flutterLocalNotificationsPlugin
