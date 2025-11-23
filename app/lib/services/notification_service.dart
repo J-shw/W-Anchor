@@ -32,16 +32,7 @@ class NotificationService {
     );
   }
 
-  Future<void> createNotificationChannel() async {
-    // const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(
-    //   serviceChannelId,
-    //   'Service Status',
-    //   description: 'Low-priority ongoing monitoring status.',
-    //   importance: Importance.low,
-    //   playSound: false,
-    //   showBadge: false,
-    // );
-    
+  Future<void> createNotificationChannel() async {    
     const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
       alarmChannelId,
       'Alarms',
@@ -54,46 +45,12 @@ class NotificationService {
       audioAttributesUsage: AudioAttributesUsage.alarm,
       showBadge: true
     );
-
-    // await _flutterLocalNotificationsPlugin
-    //     .resolvePlatformSpecificImplementation<
-    //         AndroidFlutterLocalNotificationsPlugin>()
-    //     ?.createNotificationChannel(serviceChannel);
-
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(alarmChannel);
   }
-
-  /// Show a low-priority status notification
-  // void showStatusNotification(String content) {
-  //   _flutterLocalNotificationsPlugin.show(
-  //     serviceNotificationId,
-  //     "Background Status",
-  //     content,
-  //     NotificationDetails(
-  //       android: AndroidNotificationDetails(
-  //         serviceChannelId,
-  //         'Service Status',
-  //         icon: '@drawable/ic_launcher_monochrome',
-  //         ongoing: true,
-  //         playSound: false,
-  //         autoCancel: false,
-  //         category: AndroidNotificationCategory.service,
-  //         actions: <AndroidNotificationAction>[
-  //         AndroidNotificationAction(
-  //           stopActionId,
-  //           'STOP',
-  //           // cancelNotification: true,
-  //           showsUserInterface: false,
-  //         ),
-  //       ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
+  
   /// Show a high-priority alarm notification
   void showAlarmNotification(String content) {
     _flutterLocalNotificationsPlugin.show(
