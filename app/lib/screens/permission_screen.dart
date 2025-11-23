@@ -7,7 +7,7 @@ import 'package:w_anchor/screens/main_screen.dart';
 /// Returns true if all required location permissions are granted.
 Future<bool> requestCriticalLocationPermissions() async {
   PermissionStatus locationStatus = await Permission.location.request();
-  
+
   if (locationStatus.isDenied || locationStatus.isPermanentlyDenied) {
     return false;
   }
@@ -17,7 +17,7 @@ Future<bool> requestCriticalLocationPermissions() async {
   if (backgroundStatus != PermissionStatus.granted) {
     backgroundStatus = await Permission.locationAlways.request();
   }
-  
+
   return backgroundStatus.isGranted;
 }
 
@@ -37,6 +37,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
     _checkAndRequestPermissions();
   }
 
+  // In _PermissionScreenState in permission_screen.dart
   void _checkAndRequestPermissions() async {
     await Permission.notification.request();
     bool granted = await requestCriticalLocationPermissions();
@@ -44,22 +45,29 @@ class _PermissionScreenState extends State<PermissionScreen> {
     if (granted) {
       final service = FlutterBackgroundService();
       bool isRunning = await service.isRunning();
+
       if (!isRunning) {
         await service.startService();
       }
-    }
-    
-    if (mounted) {
-      setState(() {
-        _permissionsGranted = granted;
-      });
+
+      if (mounted) {
+        setState(() {
+          _permissionsGranted = granted;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _permissionsGranted = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_permissionsGranted) {
-      return const MainScreen(); 
+      return const MainScreen();
     } else {
       return const Scaffold(
         body: Center(
