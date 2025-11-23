@@ -28,7 +28,7 @@ void onStart(ServiceInstance service) async {
       serviceChannelId,
       'Service Status',
       description: 'Low-priority ongoing monitoring status.',
-      importance: Importance.low,
+      importance: Importance.defaultImportance,
       playSound: false,
       showBadge: false,
     );
