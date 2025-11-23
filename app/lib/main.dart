@@ -43,7 +43,7 @@ Future<void> initializeForegroundService() async {
       isForegroundMode: true,
       autoStartOnBoot: false,
       notificationChannelId: serviceChannelId,
-      initialNotificationTitle: 'W Anchor',
+      initialNotificationTitle: 'Service Status',
       initialNotificationContent: 'Initializing service...',
       foregroundServiceNotificationId: serviceNotificationId,
     ),
