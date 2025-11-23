@@ -22,7 +22,7 @@
         android:value="true" />
         <meta-data
         android:name="flutter.background_service.default_notification_icon"
-        android:resource="@drawable/ic_service_icon" />
+        android:resource="@drawable/ic_bg_service_small" />
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:exported="false"
