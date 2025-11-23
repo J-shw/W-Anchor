@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/providers/settings_provider.dart';
 import 'package:w_anchor/utils/constants.dart';
-import 'package:w_anchor/services/background_service.dart';
+import 'package:w_anchor/services/foreground_service.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:w_anchor/screens/permission_screen.dart';
 
