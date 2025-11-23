@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:w_anchor/screens/main_screen.dart';
 
@@ -39,6 +40,14 @@ class _PermissionScreenState extends State<PermissionScreen> {
   void _checkAndRequestPermissions() async {
     await Permission.notification.request();
     bool granted = await requestCriticalLocationPermissions();
+
+    if (granted) {
+      final service = FlutterBackgroundService();
+      bool isRunning = await service.isRunning();
+      if (!isRunning) {
+        await service.startService();
+      }
+    }
     
     if (mounted) {
       setState(() {
