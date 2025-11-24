@@ -9,10 +9,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  DartPluginRegistrant.ensureInitialized();
   final NotificationService notificationService = NotificationService();
 
   const String notificationTitle = "Service Status";
+  String currentContent = 'Service is running...';
 
   if (service is AndroidServiceInstance) {
     await service.setAsForegroundService();
@@ -32,6 +32,11 @@ void onStart(ServiceInstance service) async {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(serviceChannel);
+
+    service.setForegroundNotificationInfo(
+      title: notificationTitle,
+      content: currentContent,
+    );
   }
 
   StreamSubscription<Position>? positionStream;
@@ -42,18 +47,17 @@ void onStart(ServiceInstance service) async {
   AlarmStatus alarmStatus = AlarmStatus.none;
   bool alarmTriggered = false;
 
-  String initialContent = 'Service is running...';
   final permission = await Geolocator.checkPermission();
+  
   if (permission == LocationPermission.denied ||
       permission == LocationPermission.deniedForever) {
-    initialContent = 'Service is running, but location is denied.';
-  }
-
-  if (service is AndroidServiceInstance) {
-    service.setForegroundNotificationInfo(
-      title: notificationTitle,
-      content: initialContent,
-    );
+    currentContent = 'Service is running, but location is denied.';
+    if (service is AndroidServiceInstance) {
+      service.setForegroundNotificationInfo(
+        title: notificationTitle,
+        content: currentContent,
+      );
+    }
   }
 
   if (permission != LocationPermission.denied &&
@@ -114,11 +118,12 @@ void onStart(ServiceInstance service) async {
                 }
               }
 
-              if (newContent.isNotEmpty) {
+              if (newContent.isNotEmpty && newContent != currentContent) {
+                currentContent = newContent;
                 if (service is AndroidServiceInstance) {
                   service.setForegroundNotificationInfo(
                     title: notificationTitle,
-                    content: newContent,
+                    content: currentContent,
                   );
                 }
               }
