@@ -17,7 +17,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 }
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {

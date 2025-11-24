@@ -37,7 +37,6 @@ class _PermissionScreenState extends State<PermissionScreen> {
     _checkAndRequestPermissions();
   }
 
-  // In _PermissionScreenState in permission_screen.dart
   void _checkAndRequestPermissions() async {
     await Permission.notification.request();
     bool granted = await requestCriticalLocationPermissions();

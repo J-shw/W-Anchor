@@ -7,16 +7,16 @@ import 'package:w_anchor/utils/constants.dart';
 import 'package:w_anchor/services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final NotificationService notificationService = NotificationService();
-
-const String notificationTitle = "Service Status";
-
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
+  final NotificationService notificationService = NotificationService();
+
+  const String notificationTitle = "Service Status";
 
   if (service is AndroidServiceInstance) {
-    service.setAsForegroundService();
+    await service.setAsForegroundService();
+
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const AndroidNotificationChannel serviceChannel = AndroidNotificationChannel(

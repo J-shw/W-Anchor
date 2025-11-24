@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:w_anchor/providers/anchor_provider.dart';
 import 'package:w_anchor/providers/settings_provider.dart';
+import 'package:w_anchor/services/notification_service.dart';
 import 'package:w_anchor/utils/constants.dart';
 import 'package:w_anchor/services/foreground_service.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -9,6 +10,8 @@ import 'package:w_anchor/screens/permission_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  final notificationService = NotificationService();
 
   await notificationService.initialize();
   await notificationService.createNotificationChannel();
